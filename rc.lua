@@ -143,7 +143,7 @@ end)
 -- @DOC_FOR_EACH_SCREEN@
 screen.connect_signal("request::desktop_decoration", function(s)
     -- Each screen has its own tag table.
-    awful.tag({ "爵 ", " ", " ", " ", " " }, s, awful.layout.layouts[1])
+    awful.tag({ "爵 ", " ", " ", " ", " " }, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -264,6 +264,9 @@ awful.mouse.append_global_mousebindings({
 -- {{{ Key bindings
 -- @DOC_GLOBAL_KEYBINDINGS@
 
+
+-- command for key remapping
+local remap_keys = "setxkbmap -v -option caps:swapescape && setxkbmap -v -option compose:prsc"
 -- General Awesome keys
 awful.keyboard.append_global_keybindings({
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
@@ -284,6 +287,9 @@ awful.keyboard.append_global_keybindings({
                   }
               end,
 
+    awful.key({ modkey }, "0", function () awful.spawn.easy_async_with_shell( remap_keys ) end,
+              {description = "fix keys", group = "hotkeys"}),
+
     -- Copy primary to clipboard (terminals to gtk)
     awful.key({ modkey }, "c", function () awful.spawn.with_shell("xsel | xsel -i -b") end,
               {description = "copy terminal to gtk", group = "hotkeys"}),
@@ -295,6 +301,9 @@ awful.keyboard.append_global_keybindings({
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
 
+    awful.key({ modkey,           }, "Escape", function () awful.util.spawn( "i3lock -c 282828aa --insidecolor=3c3836 --line-uses-ring --ringcolor=d3869b77 --insidevercolor=b8bb26 --ringvercolor=b8bb2677 --insidewrongcolor=d65d0e --ringwrongcolor=d65d0e77 --keyhlcolor=b9bb26 --bshlcolor=d65d0e --separatorcolor=28282800 --wrong-font=SauceCodeProNerdFont --verif-font=SauceCodeProNerdFont --verifcolor=ebdbb2 --wrongcolor=ebdbb2 --veriftext='...' --wrongtext='!' --noinputtext='?'" ) end,
+              {description = "lockscreen", group = "hotkeys"}),
+              
     awful.key({ modkey }, "e", function () awful.util.spawn( "nvim-qt" ) end,
         {description = "editor" , group = "launcher" }),
     awful.key({ modkey }, "a", function () awful.util.spawn( "qutebrowser" ) end,
@@ -322,8 +331,6 @@ awful.keyboard.append_global_keybindings({
               {description = "view previous", group = "tag"}),
     awful.key({ modkey, "Shift"  }, "j",  awful.tag.viewnext,
               {description = "view next", group = "tag"}),
-    awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
-              {description = "go back", group = "tag"}),
 })
 
 -- Focus related keybindings
@@ -389,9 +396,9 @@ awful.keyboard.append_global_keybindings({
               {description = "swap with previous client by index", group = "client"}),
     awful.key({ modkey,           }, "u", awful.client.urgent.jumpto,
               {description = "jump to urgent client", group = "client"}),
-    awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
+    awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.01)          end,
               {description = "increase master width factor", group = "layout"}),
-    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)          end,
+    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.01)          end,
               {description = "decrease master width factor", group = "layout"}),
     awful.key({ modkey, "Shift"   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
               {description = "increase the number of master clients", group = "layout"}),
@@ -572,6 +579,19 @@ ruled.client.connect_signal("request::rules", function()
         properties = { floating = true }
     }
 
+-- Focus urgent tags automatically
+tag.connect_signal("property::urgent", function(t)
+                       awful.screen.focus(t.screen)
+                       if not(t.selected) then
+                           t:view_only()
+                       end
+end)
+
+-- Focus urgent clients automatically
+client.connect_signal("property::urgent", function(c)
+                          c.minimized = false
+                          c:jump_to()
+end)
     
     -- Borders only on tiled windows, not single client
     screen.connect_signal("arrange", function (s)
