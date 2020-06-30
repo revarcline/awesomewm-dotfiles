@@ -103,14 +103,14 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 tag.connect_signal("request::default_layouts", function()
     awful.layout.append_default_layouts({
         awful.layout.suit.tile,
-        awful.layout.suit.floating,
         --awful.layout.suit.tile.left,
         --awful.layout.suit.tile.bottom,
-        --awful.layout.suit.tile.top,
-        awful.layout.suit.fair,
-        awful.layout.suit.fair.horizontal,
+        awful.layout.suit.tile.top,
+        --awful.layout.suit.fair,
+        --awful.layout.suit.fair.horizontal,
         awful.layout.suit.spiral,
         --awful.layout.suit.spiral.dwindle,
+        awful.layout.suit.floating,
         awful.layout.suit.max,
         awful.layout.suit.max.fullscreen,
         --awful.layout.suit.magnifier,
@@ -306,7 +306,7 @@ awful.keyboard.append_global_keybindings({
               
     awful.key({ modkey }, "e", function () awful.util.spawn( "nvim-qt" ) end,
         {description = "editor" , group = "launcher" }),
-    awful.key({ modkey }, "a", function () awful.util.spawn( "qutebrowser" ) end,
+    awful.key({ modkey }, "a", function () awful.util.spawn( "firefox" ) end,
         {description = "web browser" , group = "launcher" }),
     awful.key({ modkey }, "b", function () awful.util.spawn( "thunar" ) end,
         {description = "file browser" , group = "launcher" }),
@@ -327,9 +327,9 @@ awful.keyboard.append_global_keybindings({
 
 -- Tags related keybindings
 awful.keyboard.append_global_keybindings({
-    awful.key({ modkey, "Shift" }, "k",   awful.tag.viewprev,
+    awful.key({ modkey, "Shift" }, "j",   awful.tag.viewprev,
               {description = "view previous", group = "tag"}),
-    awful.key({ modkey, "Shift"  }, "j",  awful.tag.viewnext,
+    awful.key({ modkey, "Shift"  }, "k",  awful.tag.viewnext,
               {description = "view next", group = "tag"}),
 })
 
