@@ -50,9 +50,9 @@ naughty.config.icon_formats = { "png", "gif", "svg" }
 
 -- @DOC_DEFAULT_APPLICATIONS@
 -- This is used later as the default terminal and editor to run.
-terminal = "termite"
+terminal = "kitty"
 editor = os.getenv("EDITOR") or "nvim"
-editor_cmd = "nvim-qt"
+editor_cmd = "kitty -e nvim"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -70,7 +70,7 @@ myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " ~/.config/awesome/rc.lua"},
    { "restart", awesome.restart },
-   { "quit", function() awesome.quit() end },
+   { "quit", awesome_gnome_quit() },
 }
 
 mymainmenu = freedesktop.menu.build({
@@ -118,6 +118,11 @@ tag.connect_signal("request::default_layouts", function()
     })
 end)
 -- }}}
+
+function awesome_gnome_quit()
+    awesome.quit()
+    awful.spawn.with_shell("gnome-session-quit --logout --no-prompt")
+end
 
 -- {{{ Wibar
 
@@ -275,8 +280,8 @@ awful.keyboard.append_global_keybindings({
               {description = "show main menu", group = "awesome"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, "Shift"   }, "q", awesome.quit,
-              {description = "quit awesome", group = "awesome"}),
+    awful.key({ modkey, "Shift"   }, "q", awesome_gnome_quit()
+              {description = "quit awesome session", group = "awesome"}),
     awful.key({ modkey }, "x",
               function ()
                   awful.prompt.run {
@@ -308,7 +313,7 @@ awful.keyboard.append_global_keybindings({
         {description = "editor" , group = "launcher" }),
     awful.key({ modkey }, "a", function () awful.util.spawn( "firefox" ) end,
         {description = "web browser" , group = "launcher" }),
-    awful.key({ modkey }, "b", function () awful.util.spawn( "thunar" ) end,
+    awful.key({ modkey }, "b", function () awful.util.spawn( "nautilus" ) end,
         {description = "file browser" , group = "launcher" }),
     awful.key({ modkey }, "i", function () awful.util.spawn( "vimiv" ) end,
         {description = "image viewer" , group = "launcher" }),
