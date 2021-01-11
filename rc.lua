@@ -45,6 +45,7 @@ local chosen_theme = "pinkgruv"
 local theme_path = string.format("%s/.config/awesome/themes/%s/theme.lua", os.getenv("HOME"), chosen_theme)
 beautiful.init(theme_path)
 
+-- logout
 naughty.config.icon_dirs = { "~/.icons/oomox-gruvbox-dark-medium", "/usr/share/icons/Papirus-Dark", "/usr/share/pixmaps" }
 naughty.config.icon_formats = { "png", "gif", "svg" }
 
@@ -70,7 +71,7 @@ myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " ~/.config/awesome/rc.lua"},
    { "restart", awesome.restart },
-   { "quit", awesome_gnome_quit() },
+   { "quit", awful.spawn.with_shell("gnome-session-quit --logout --no-prompt")},
 }
 
 mymainmenu = freedesktop.menu.build({
@@ -102,6 +103,7 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- Table of layouts to cover with awful.layout.inc, order matters.
 tag.connect_signal("request::default_layouts", function()
     awful.layout.append_default_layouts({
+        awful.layout.suit.floating,
         awful.layout.suit.tile,
         --awful.layout.suit.tile.left,
         --awful.layout.suit.tile.bottom,
@@ -110,7 +112,6 @@ tag.connect_signal("request::default_layouts", function()
         --awful.layout.suit.fair.horizontal,
         awful.layout.suit.spiral,
         --awful.layout.suit.spiral.dwindle,
-        awful.layout.suit.floating,
         awful.layout.suit.max,
         awful.layout.suit.max.fullscreen,
         --awful.layout.suit.magnifier,
@@ -118,12 +119,6 @@ tag.connect_signal("request::default_layouts", function()
     })
 end)
 -- }}}
-
-function awesome_gnome_quit()
-    awesome.quit()
-    awful.spawn.with_shell("gnome-session-quit --logout --no-prompt")
-end
-
 -- {{{ Wibar
 
 -- Keyboard map indicator and switcher
@@ -218,12 +213,6 @@ screen.connect_signal("request::desktop_decoration", function(s)
                     stops = {{0, "#d3869b"}, {1, "#83a598"}}}
     vicious.register(memwidget, vicious.widgets.mem, "$1", 3)
 
-    -- Battery Sidget
-    batwidget = wibox.widget.textbox()
-    vicious.cache(vicious.widgets.bat)
-    vicious.register(batwidget, vicious.widgets.bat, "$2", 60, 'BAT1')
-
-
 
     -- @DOC_WIBAR@
     -- Create the wibox
@@ -271,7 +260,7 @@ awful.mouse.append_global_mousebindings({
 
 
 -- command for key remapping
-local remap_keys = "setxkbmap -v -option caps:swapescape && setxkbmap -v -option compose:prsc"
+local remap_keys = "setxkbmap -v -option caps:escape && setxkbmap -v -option compose:prsc"
 -- General Awesome keys
 awful.keyboard.append_global_keybindings({
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
@@ -280,7 +269,7 @@ awful.keyboard.append_global_keybindings({
               {description = "show main menu", group = "awesome"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, "Shift"   }, "q", awesome_gnome_quit()
+    awful.key({ modkey, "Shift"   }, "q", awful.spawn.with_shell("gnome-session-quit --logout --no-prompt"),
               {description = "quit awesome session", group = "awesome"}),
     awful.key({ modkey }, "x",
               function ()
@@ -306,10 +295,40 @@ awful.keyboard.append_global_keybindings({
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
 
-    awful.key({ modkey,           }, "Escape", function () awful.util.spawn( "i3lock -c 282828aa --insidecolor=3c3836 --line-uses-ring --ringcolor=d3869b77 --insidevercolor=b8bb26 --ringvercolor=b8bb2677 --insidewrongcolor=d65d0e --ringwrongcolor=d65d0e77 --keyhlcolor=b9bb26 --bshlcolor=d65d0e --separatorcolor=28282800 --wrong-font=SauceCodeProNerdFont --verif-font=SauceCodeProNerdFont --verifcolor=ebdbb2 --wrongcolor=ebdbb2 --veriftext='...' --wrongtext='!' --noinputtext='?'" ) end,
-              {description = "lockscreen", group = "hotkeys"}),
               
-    awful.key({ modkey }, "e", function () awful.util.spawn( "nvim-qt" ) end,
+
+
+
+--!Volume Keys
+  awful.key({}, "XF86AudioLowerVolume", function ()
+     awful.util.spawn("amixer -q -D pulse sset Master 1%-", false)
+ end, {description = "volume -" , group = "hotkeys" }),
+   awful.key({}, "XF86AudioRaiseVolume", function ()
+     awful.util.spawn("amixer -q -D pulse sset Master 1%+", false)
+ end, {description = "volume +" , group = "hotkeys" }),
+   awful.key({}, "XF86AudioMute", function ()
+     awful.util.spawn("amixer -D pulse set Master 1+ toggle", false)
+ end, {description = "mute" , group = "hotkeys" }),
+--]]
+
+--!Media Keys
+   awful.key({}, "XF86AudioPlay", function()
+     awful.util.spawn("playerctl play-pause", false)
+ end, {description = "play-pause" , group = "hotkeys" }),
+   awful.key({}, "XF86AudioNext", function()
+     awful.util.spawn("playerctl next", false)
+ end, {description = "next" , group = "hotkeys" }),
+   awful.key({}, "XF86AudioPrev", function()
+     awful.util.spawn("playerctl previous", false)
+ end, {description = "previous" , group = "hotkeys" }),
+
+    awful.key({ modkey, "Control" }, "p", function()
+        awful.util.spawn("playerctl play-pause", false)
+    end, {description = "play-pause" , group = "hotkeys" }),
+
+
+
+    awful.key({ modkey }, "e", function () awful.util.spawn( "kitty -e nvim" ) end,
         {description = "editor" , group = "launcher" }),
     awful.key({ modkey }, "a", function () awful.util.spawn( "firefox" ) end,
         {description = "web browser" , group = "launcher" }),
@@ -360,9 +379,9 @@ awful.keyboard.append_global_keybindings({
             end
         end,
         {description = "go back", group = "client"}),
-    awful.key({ modkey, "Control", "Shift" }, "j", function () awful.screen.focus_relative( 1) end,
+    awful.key({ modkey, "Control" }, "j", function () awful.screen.focus_relative( 1) end,
               {description = "focus the next screen", group = "screen"}),
-    awful.key({ modkey, "Control", "Shift" }, "k", function () awful.screen.focus_relative(-1) end,
+    awful.key({ modkey, "Control" }, "k", function () awful.screen.focus_relative(-1) end,
               {description = "focus the previous screen", group = "screen"}),
     awful.key({ modkey, "Control" }, "n",
               function ()
@@ -373,24 +392,6 @@ awful.keyboard.append_global_keybindings({
                   end
               end,
               {description = "restore minimized", group = "client"}),
-})
-
--- Other fun hotkeys
-awful.keyboard.append_global_keybindings({
-
--- reset desktop wallpaper (useful after rotation)
-    awful.key({ modkey }, ".", function () awful.util.spawn( "nitrogen --restore" ) end,
-        {description = "reset wallpaper", group = "screen"}),
-
-    awful.key({ "Control", modkey}, "Right", function() awful.util.spawn( "/home/arcline/codes/rot/rotate.sh right" ) end,
-        {description = "Screen Right", group = "screen"}),
-    awful.key({ "Control", modkey   }, "Left", function() awful.util.spawn( "/home/arcline/codes/rot/rotate.sh left" ) end,
-        {description = "Screen Left", group = "screen"}),
-    awful.key({ "Control", modkey   }, "Up", function() awful.util.spawn( "/home/arcline/codes/rot/rotate.sh normal" ) end,
-        {description = "Screen Normal", group = "screen"}),
-    awful.key({ "Control", modkey   }, "Down", function() awful.util.spawn( "/home/arcline/codes/rot/rotate.sh inverted" ) end,
-        {description = "Screen Invert", group = "screen"}),
-
 })
 
 -- Layout related keybindings
