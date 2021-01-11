@@ -71,7 +71,7 @@ myawesomemenu = {
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " ~/.config/awesome/rc.lua"},
    { "restart", awesome.restart },
-   { "quit", awful.spawn.with_shell("gnome-session-quit --logout --no-prompt")},
+   { "quit", function() awesome.quit() end},
 }
 
 mymainmenu = freedesktop.menu.build({
@@ -269,8 +269,6 @@ awful.keyboard.append_global_keybindings({
               {description = "show main menu", group = "awesome"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, "Shift"   }, "q", awful.spawn.with_shell("gnome-session-quit --logout --no-prompt"),
-              {description = "quit awesome session", group = "awesome"}),
     awful.key({ modkey }, "x",
               function ()
                   awful.prompt.run {
@@ -338,8 +336,8 @@ awful.keyboard.append_global_keybindings({
         {description = "image viewer" , group = "launcher" }),
     awful.key({ modkey }, "y", function () awful.util.spawn( "foliate" ) end,
         {description = "ebook reader" , group = "launcher" }),
-    awful.key({ modkey }, "d", function () awful.util.spawn( "zathura" ) end,
-        {description = "pdf reader" , group = "launcher" }),
+    awful.key({ modkey }, "d", function () awful.util.spawn( "evolution" ) end,
+        {description = "email reader" , group = "launcher" }),
 
     awful.key({ modkey }, "r",     function () awful.screen.focused().mypromptbox:run() end,
               {description = "run prompt", group = "launcher"}),

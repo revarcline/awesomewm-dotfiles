@@ -12,7 +12,7 @@ theme.wallpaper = themes_path .. "pinkgruv/cherry.png"
 -- }}}
 
 -- {{{ Styles
-theme.font      = "SauceCodePro Nerd Font 10"
+theme.font      = "JetBrainsMono Nerd Font 10"
 
 -- {{{ Colors
 theme.fg_normal  = "#ebdbb2"
