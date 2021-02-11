@@ -258,7 +258,7 @@ awful.mouse.append_global_mousebindings({
 
 
 -- command for key remapping
-local remap_keys = "setxkbmap -v -option caps:escape && setxkbmap -v -option compose:prsc"
+local remap_keys = "setxkbmap -v -option caps:escape && setxkbmap -v -option compose:menu"
 -- General Awesome keys
 awful.keyboard.append_global_keybindings({
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
@@ -276,18 +276,14 @@ awful.keyboard.append_global_keybindings({
                     history_path = awful.util.get_cache_dir() .. "/history_eval"
                   }
               end,
-
+              {description = "lua execute prompt", group = "awesome"}),
     awful.key({ modkey }, "0", function () awful.spawn.easy_async_with_shell( remap_keys ) end,
               {description = "fix keys", group = "hotkeys"}),
 
     -- Copy primary to clird (terminals to gtk)
-    awful.key({ modkey }, "c", function () awful.spawn.with_shell("xsel | xsel -i -b") end,
-              {description = "copy terminal to gtk", group = "hotkeys"}),
-    -- Copy clipboard to primary (gtk to terminals)
-    awful.key({ modkey }, "v", function () awful.spawn.with_shell("xsel -b | xsel") end,
-              {description = "copy gtk to terminal", group = "hotkeys"}),
+    awful.key({ modkey }, "c", function () awful.spawn.with_shell("rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'xsel | xsel -i -b") end,
+              {description = "show clipboard history", group = "hotkeys"}),
 
-              {description = "lua execute prompt", group = "awesome"}),
     awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
               {description = "open a terminal", group = "launcher"}),
 
