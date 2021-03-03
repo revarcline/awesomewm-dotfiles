@@ -141,7 +141,7 @@ end)
 -- @DOC_FOR_EACH_SCREEN@
 screen.connect_signal("request::desktop_decoration", function(s)
     -- Each screen has its own tag table.
-    awful.tag({ "爵 ", " ", " ", " ", " ", " "}, s, awful.layout.layouts[1])
+    awful.tag({ "爵 ", " ", " ", " ", " "}, s, awful.layout.layouts[1])
 
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -195,21 +195,21 @@ screen.connect_signal("request::desktop_decoration", function(s)
         }
     }
 
-    -- CPU widget
-    cpuwidget = awful.widget.graph()
-    cpuwidget:set_width(50)
-    cpuwidget:set_background_color"#504945"
-    cpuwidget:set_color{type = "linear", from = {0, 0}, to = {50, 0},
-                    stops = {{0, "#83a598"}, {1, "#d3869b"}}}
-    vicious.register(cpuwidget, vicious.widgets.cpu, "$1", 3)
+    ---- CPU widget
+    --cpuwidget = awful.widget.graph()
+    --cpuwidget:set_width(50)
+    --cpuwidget:set_background_color"#504945"
+    --cpuwidget:set_color{type = "linear", from = {0, 0}, to = {50, 0},
+                    --stops = {{0, "#83a598"}, {1, "#d3869b"}}}
+    --vicious.register(cpuwidget, vicious.widgets.cpu, "$1", 3)
 
-    -- Memory widget
-    memwidget = awful.widget.graph()
-    memwidget:set_width(50)
-    memwidget:set_background_color"#504845"
-    memwidget:set_color{type = "linear", from = {0, 0}, to = {50, 0},
-                    stops = {{0, "#d3869b"}, {1, "#83a598"}}}
-    vicious.register(memwidget, vicious.widgets.mem, "$1", 3)
+    ---- Memory widget
+    --memwidget = awful.widget.graph()
+    --memwidget:set_width(50)
+    --memwidget:set_background_color"#504845"
+    --memwidget:set_color{type = "linear", from = {0, 0}, to = {50, 0},
+                    --stops = {{0, "#d3869b"}, {1, "#83a598"}}}
+    --vicious.register(memwidget, vicious.widgets.mem, "$1", 3)
 
 
     -- @DOC_WIBAR@
@@ -233,8 +233,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             spacing = 3,
-            memwidget,
-            cpuwidget,
+            --memwidget,
+            --cpuwidget,
             wibox.widget.systray(),
             batwidget,
             mytextclock,
@@ -257,8 +257,6 @@ awful.mouse.append_global_mousebindings({
 -- @DOC_GLOBAL_KEYBINDINGS@
 
 
--- command for key remapping
-local remap_keys = "setxkbmap -v -option caps:escape && setxkbmap -v -option compose:menu"
 -- General Awesome keys
 awful.keyboard.append_global_keybindings({
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
@@ -267,7 +265,7 @@ awful.keyboard.append_global_keybindings({
               {description = "show main menu", group = "awesome"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey }, "x",
+    awful.key({ modkey, "Shift" }, "x",
               function ()
                   awful.prompt.run {
                     prompt       = "Run Lua code: ",
@@ -277,8 +275,6 @@ awful.keyboard.append_global_keybindings({
                   }
               end,
               {description = "lua execute prompt", group = "awesome"}),
-    awful.key({ modkey }, "0", function () awful.spawn.easy_async_with_shell( remap_keys ) end,
-              {description = "fix keys", group = "hotkeys"}),
 
     -- Copy primary to clird (terminals to gtk)
     awful.key({ modkey }, "c", function () awful.spawn.with_shell("rofi -modi 'clipboard:greenclip print' -show clipboard -run-command '{cmd}'xsel | xsel -i -b") end,
@@ -328,10 +324,10 @@ awful.key({ }, "Print", function () awful.util.spawn("flameshot gui", false) end
         {description = "web browser" , group = "launcher" }),
     awful.key({ modkey, "Shift" }, "f", function () awful.util.spawn( "nautilus" ) end,
         {description = "file browser" , group = "launcher" }),
-    awful.key({ modkey, "Shift" }, "e", function () awful.util.spawn( "evolution" ) end,
+    awful.key({ modkey, "Shift" }, "e", function () awful.util.spawn( "thunderbird" ) end,
         {description = "email reader" , group = "launcher" }),
 
-    awful.key({ modkey }, "r",     function () awful.screen.focused().mypromptbox:run() end,
+    awful.key({ modkey, "Shift" }, "r",     function () awful.screen.focused().mypromptbox:run() end,
               {description = "run prompt", group = "launcher"}),
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"}),
